@@ -1,14 +1,18 @@
 
+import os
 import requests
 import psycopg
 import time
+from dotenv import load_dotenv
+
+load_dotenv("password.env")
 
 connection = psycopg.connect(
-    host="localhost",
-    port=5432,
-    dbname="monitoring",
-    user="monitoring",
-    password="devpassword123"
+    host=os.environ.get("POSTGRES_HOST"),
+    port=os.environ.get("POSTGRES_PORT"),
+    dbname=os.environ.get("POSTGRES_DB"),
+    user=os.environ.get("POSTGRES_USER"),
+    password=os.environ.get("POSTGRES_PASSWORD")
 )
 
 print("Connexion à PostgreSQL réussie !")
