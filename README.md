@@ -101,10 +101,10 @@ SaaS_monitoring/
 
 ## Équipe
 
-Projet réalisé par deux étudiants :
+Projet réalisé par deux étudiants : Romain et Marcus
 
-- **Développement :** Backend, API REST et interface utilisateur.
-- **DevOps :** Infrastructure, monitoring, conteneurisation, automatisation et déploiement.
+- **Développement :** Backend, API REST et interface utilisateur. Romain
+- **DevOps :** Infrastructure, monitoring, conteneurisation, automatisation et déploiement. Marcus
 
 ---
 
