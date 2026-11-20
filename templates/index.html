@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="30">
+  <title>Monitoring</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; background: #f5f6f8; color: #222; }
+    h1 { margin-bottom: 0; }
+    .summary { color: #555; margin-bottom: 1.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .card { background: white; border-radius: 8px; padding: 1rem; border-left: 6px solid #ccc; }
+    .card.ok { border-color: #2ecc71; }
+    .card.ko { border-color: #e74c3c; }
+    .badge { font-weight: bold; }
+    .ok .badge { color: #2ecc71; }
+    .ko .badge { color: #e74c3c; }
+    .url { font-size: 1.1rem; margin: 0 0 .5rem; }
+    .meta { font-size: .9rem; color: #555; line-height: 1.5; }
+    table { border-collapse: collapse; margin-top: 2rem; background: white; }
+    th, td { border: 1px solid #ddd; padding: 6px 12px; text-align: left; }
+    .err { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <h1>Monitoring</h1>
+
+  {% if error %}
+    <p class="err">Connexion échouée : {{ error }}</p>
+  {% else %}
+    <p class="summary">{{ up }} / {{ total }} sites en ligne et sains · rafraîchi toutes les 30 s</p>
+
+    <div class="grid">
+      {% for s in sites %}
+      <div class="card {{ 'ok' if s.healthy else 'ko' }}">
+        <p class="url">{{ s.url }}</p>
+        <div class="meta">
+          <span class="badge">{{ 'EN LIGNE' if s.healthy else 'PROBLÈME' }}</span><br>
+          Code : {{ s.code if s.code else '—' }}<br>
+          Dernier temps : {{ s.ms if s.ms else '—' }} ms<br>
+          Moyenne : {{ s.avg_ms if s.avg_ms else '—' }} ms<br>
+          Uptime : {{ s.uptime }} %
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h2>Dernières vérifications</h2>
+    <table>
+      <tr><th>Site</th><th>Code</th><th>ms</th><th>Sain</th></tr>
+      {% for url, code, ms, healthy in history %}
+      <tr><td>{{ url }}</td><td>{{ code if code else '—' }}</td><td>{{ ms if ms else '—' }}</td><td>{{ '✔' if healthy else '✘' }}</td></tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+</body>
+</html>
