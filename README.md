@@ -22,7 +22,14 @@ La plateforme a pour objectif de surveiller :
 | Requêtes HTTP | Requests | Récupération des réponses HTTP |
 | Base de données | PostgreSQL | Stockage des résultats |
 | Accès à la base | Psycopg | Communication entre Python et PostgreSQL |
-| Environnement de base de données | Docker | Exécution de PostgreSQL dans un conteneur |
+| Tableau de bord | Flask | Affichage de l'état des sites |
+| Conteneurisation | Docker et Docker Compose | Exécution de l'ensemble des services |
+
+Trois services sont lancés par Docker Compose :
+
+- `db` : la base PostgreSQL, avec un volume pour conserver les données.
+- `checker` : le script de monitoring, qui vérifie les sites toutes les 60 secondes.
+- `web` : le tableau de bord, accessible sur le port 5000.
 
 ## Fonctionnement
 
@@ -36,6 +43,8 @@ Le script Python effectue les opérations suivantes :
 6. Gestion des erreurs lorsqu'un site est inaccessible.
 7. Répétition automatique des vérifications toutes les 60 secondes.
 
+Le tableau de bord affiche, pour chaque site, son dernier état, son dernier temps de réponse, son temps de réponse moyen et son taux de disponibilité, ainsi que l'historique des dernières vérifications. La page se rafraîchit toutes les 30 secondes.
+
 ### Statuts surveillés
 
 - **Online :** le serveur a répondu à la requête HTTP.
@@ -44,22 +53,46 @@ Le script Python effectue les opérations suivantes :
 
 Un site peut être accessible sans être considéré comme sain. Par exemple, une réponse HTTP 429 signifie que le serveur répond, mais limite les requêtes.
 
-## Structure actuelle du repository
+## Lancer le projet
+
+Prérequis : Docker et Docker Compose.
+
+1. Copier le fichier `password.env.example` en `password.env`, puis y renseigner un mot de passe.
+2. Lancer l'ensemble des services :
+
+```bash
+docker compose up --build
+```
+
+3. Ouvrir le tableau de bord sur `http://127.0.0.1:5000`. Les premières données apparaissent après environ une minute.
+
+Pour arrêter les services : `docker compose down`.
+
+Le fichier `password.env` contient les identifiants de la base et n'est jamais envoyé sur GitHub.
+
+## Structure du repository
 
 ```text
 SaaS_monitoring/
 │
+├── app.py
 ├── checker.py
-└── requirements.txt
+├── docker-compose.yml
+├── dockerfile
+├── init.sql
+├── password.env.example
+├── requirements.txt
+└── templates/
+    └── index.html
 ```
 
 ## Évolutions prévues
 
-- [ ] Amélioration de la configuration avec des variables d'environnement.
-- [ ] Conteneurisation du service de monitoring.
-- [ ] Mise en place de Docker Compose.
+- [x] Amélioration de la configuration avec des variables d'environnement.
+- [x] Conteneurisation du service de monitoring.
+- [x] Mise en place de Docker Compose.
+- [x] Création d'un tableau de bord web (version minimale).
 - [ ] Développement d'une API REST.
-- [ ] Création d'un tableau de bord web.
 - [ ] Gestion de plusieurs clients.
 - [ ] Mise en place de notifications en cas de panne.
 - [ ] Surveillance des certificats SSL et des domaines.
